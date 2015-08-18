@@ -55,7 +55,7 @@ srv:listen(80, function(conn)
             p = math.floor(bmp180.getPressure())
             
             -- temperature in degrees Celsius
-            print("Temperature: "..(t/10).."."..(t%10).." deg C")
+            print("Temperature: "..(t/10).." deg C")
             response["temperature"] = t / 10;
             
             -- pressure in differents units
@@ -67,7 +67,12 @@ srv:listen(80, function(conn)
             response["root"] = "/";
         end
 
-        buf = cjson.encode(response)
+        buf = buf .. "HTTP/1.0 200 OK\r\n"
+        buf = buf .. "Content-Type: application/json; charset=us-ascii\r\n"
+        local reply = cjson.encode(response)
+        buf = buf .. "Content-Length: " .. string.len(reply) .. "\r\n"
+        buf = buf .. "\r\n"
+        buf = buf .. reply
         
         client:send(buf);
         client:close();
